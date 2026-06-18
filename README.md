@@ -1,6 +1,13 @@
 # EventLogs
 EventLogsの一時解析用プログラム
 
+## PowerShell用プログラム
+* EventLogs_PS.bat
+* EventLogs.ps1
+
+## Python用プログラム
+* EventLogs_PY.bat
+* EventLogs.py
 
 # 1．イベントログID
 ```
