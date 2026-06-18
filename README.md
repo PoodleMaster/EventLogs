@@ -1,5 +1,5 @@
-# EventLogs
-EventLogsの一時解析用プログラム
+# Windows EventLogs
+Windows用のEventLogs一時解析用プログラム
 
 ## PowerShell用プログラム
 * EventLogs_PS.bat … 起動用プログラム
