@@ -2,25 +2,26 @@
 Windows用のイベント・ログの一時解析用プログラム
 
 ## ■ Version1
-●PowerShell用プログラム
-* EventLogs_PS.bat … 起動用プログラム
-* EventLogs.ps1 … 実行プログラム
+* **PowerShell用プログラム**
+  * EventLogs_PS.bat … 起動用プログラム
+  * EventLogs.ps1 … 実行プログラム
 
-●Python用プログラム
-* EventLogs_PY.bat … 起動用プログラム
-* EventLogs.py … 実行プログラム
+* **Python用プログラム**
+  * EventLogs_PY.bat … 起動用プログラム
+  * EventLogs.py … 実行プログラム
 
 ## ■ Version2
-●PowerShell用プログラム
-* EventLogsV2_PS.bat … 起動用プログラム
-* EventLogsV2.ps1 … 実行プログラム
+* **PowerShell用プログラム**
+  * EventLogsV2_PS.bat … 起動用プログラム
+  * EventLogsV2.ps1 … 実行プログラム
 
-●Python用プログラム
-* EventLogsV2_PY.bat … 起動用プログラム
-* EventLogsV2.py … 実行プログラム
+* **Python用プログラム**
+  * EventLogsV2_PY.bat … 起動用プログラム
+  * EventLogsV2.py … 実行プログラム
 
 # 1．イベントログID
 ## ■ Version1
+一次解析用。Windowsの起動、終了等基本的なもののみ抽出します。
 ```
 ------------------------------------------------------------------
 イベントログID
@@ -39,6 +40,7 @@ ID    種類    意味
 1001  異常    BugCheck（ブルースクリーン）
 ```
 ## ■ Version2
+二次解析用。Windowsの起動、終了等基本的なものに加えてGPU、Hardware、Storageも抽出します。
 ```
 ----------------------------------------------------------------
 イベントログID一覧
