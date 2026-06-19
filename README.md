@@ -60,46 +60,57 @@ ID    種類    意味
 ID    種類      意味
 ---------------------------------------------------------------
 12    起動      OS起動（Kernel-General）
-6005  起動      EventLogサービス開始（Windows起動）
-6009  起動      OSバージョン情報記録
+6005  起動      EventLogサービス開始
+6009  起動      OS情報記録
 
 13    正常      OS終了（Kernel-General）
-1074  正常      ユーザー/プロセスによる再起動・シャットダウン要求
-6006  正常      EventLogサービス停止（正常終了処理完了）
+1074  正常      再起動/シャットダウン要求
+6006  正常      EventLogサービス停止
 
-41    異常      Kernel-Power（前回正常終了できなかった）
-6008  異常      予期しないシャットダウン検出
-1001  異常      BugCheck（ブルースクリーン）
+41    異常      Kernel-Power
+6008  異常      予期しないシャットダウン
+1001  異常      BugCheck(BSOD)
 
 
-【GPU / NVIDIA】
+【GPU NVIDIA】
 
-ID    種類      意味
+Provider : nvlddmkm
+
+ID
 ---------------------------------------------------------------
-13    異常      nvlddmkm ドライバーエラー
-14    異常      NVIDIA GPU関連エラー
-153   異常      GPU応答遅延・リセット系
+13    Driver Error
+14    GPU Hardware Error
+153   GPU Timeout / Reset
 
 
-【Hardware / WHEA】
+【WHEA】
 
-ID    種類      意味
+Provider : Microsoft-Windows-WHEA-Logger
+
+ID
 ---------------------------------------------------------------
-17    注意      修正済みハードウェアエラー
-                （PCIe / GPU / NVMe等、訂正可能）
+17    Corrected Hardware Error
+      PCIe / GPU / NVMe等
 
-18    異常      致命的ハードウェアエラー
-                （CPU / メモリ / PCIe等）
+18    Fatal Hardware Error
 
 
 【Storage】
 
-Provider            意味
+Provider     ID
 ---------------------------------------------------------------
-disk                HDD/SSD ディスクエラー
-stornvme            NVMe SSD コントローラーエラー
-storahci            SATA/AHCI コントローラーエラー
-ntfs                ファイルシステムエラー
+disk         7      Bad Block
+disk         51     Disk I/O Warning
+disk         153    I/O Retry
+
+stornvme     11     NVMe Controller Error
+stornvme     129    NVMe Reset
+
+storahci     129    SATA Reset
+
+Ntfs         55     File System Corruption
+
+===============================================================
 ```
 
 # 3．イベントログ例
