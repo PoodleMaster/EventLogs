@@ -1,2 +1,0 @@
-python EventLogs.py
-pause
