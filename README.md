@@ -4,7 +4,7 @@ Windows用のイベント・ログの一次解析用プログラム。<BR>
 
 # 1．プログラム
 
-Windowsの起動、終了等基本的なものに加えてGPU、Hardware、Storageも抽出します。
+Windowsの起動、終了に加えてGPU、Hardware、Storage等基本的なものも抽出します。
 * **PowerShell用プログラム**
   * EventLogsV2_PS.bat … 起動用プログラム
   * EventLogsV2.ps1 … 実行プログラム
