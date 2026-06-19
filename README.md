@@ -13,7 +13,8 @@ Windowsの起動、終了等基本的なもののみ抽出します。
 
 * **Python用プログラム**
   * EventLogs_PY.bat … 起動用プログラム
-  * EventLogs.py … 実行プログラム
+  * EventLogs.py … ランチャープログラム
+  * EventLogs.ps1 … 実行プログラム
 
 ## ■ Version2
 二次解析用。<BR>
@@ -24,7 +25,8 @@ Windowsの起動、終了等基本的なものに加えてGPU、Hardware、Stora
 
 * **Python用プログラム**
   * EventLogsV2_PY.bat … 起動用プログラム
-  * EventLogsV2.py … 実行プログラム
+  * EventLogsV2.py … ランチャープログラム
+  * EventLogsV2.ps1 … 実行プログラム
 
 # 2．イベントログID
 ## ■ Version1
