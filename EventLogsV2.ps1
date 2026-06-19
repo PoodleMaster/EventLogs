@@ -1,5 +1,6 @@
 # ===============================================================
 # EventLogsV2.ps1
+# Power / GPU / WHEA / Storage Event Export
 # ===============================================================
 
 
@@ -7,70 +8,80 @@
 # イベントログID一覧
 # ----------------------------------------------------------------
 #
+# イベント判定基本:
+#
+#   LogName + Provider + ID
+#
+# ID単体では意味が決まらないためProviderも確認する
+#
+#
 # 【Power / 起動・終了】
 #
-# ID    種類      意味
+# Provider                              ID      意味
 # ---------------------------------------------------------------
-# 12    起動      OS起動（Kernel-General）
-# 6005  起動      EventLogサービス開始
-# 6009  起動      OS情報記録
+# Microsoft-Windows-Kernel-General      12      OS起動
+# Microsoft-Windows-Kernel-General      13      OS終了
 #
-# 13    正常      OS終了（Kernel-General）
-# 1074  正常      再起動/シャットダウン要求
-# 6006  正常      EventLogサービス停止
+# EventLog                              6005    EventLogサービス開始
+# EventLog                              6006    EventLogサービス停止
+# EventLog                              6008    予期しないシャットダウン
+# EventLog                              6009    OS情報記録
 #
-# 41    異常      Kernel-Power
-# 6008  異常      予期しないシャットダウン
-# 1001  異常      BugCheck(BSOD)
+# User32                                1074    再起動/シャットダウン要求
+#
+# Microsoft-Windows-Kernel-Power        41      正常終了できなかった
+#
+# Microsoft-Windows-WER-SystemErrorReporting
+#                                       1001    BugCheck(BSOD)
 #
 #
 # 【GPU NVIDIA】
 #
-# Provider : nvlddmkm
-#
-# ID
+# Provider                              ID      意味
 # ---------------------------------------------------------------
-# 13    Driver Error
-# 14    GPU Hardware Error
-# 153   GPU Timeout / Reset
+# nvlddmkm                              13      Driver Error
+# nvlddmkm                              14      GPU Hardware Error
+# nvlddmkm                              153     GPU Timeout / Reset
 #
 #
-# 【WHEA】
+# 【WHEA Hardware】
 #
-# Provider : Microsoft-Windows-WHEA-Logger
-#
-# ID
+# Provider                              ID      意味
 # ---------------------------------------------------------------
-# 17    Corrected Hardware Error
-#       PCIe / GPU / NVMe等
+# Microsoft-Windows-WHEA-Logger         17      Corrected Hardware Error
+#                                               PCIe / GPU / NVMe等
 #
-# 18    Fatal Hardware Error
+# Microsoft-Windows-WHEA-Logger         18      Fatal Hardware Error
 #
 #
 # 【Storage】
 #
-# Provider     ID
+# Provider                              ID      意味
 # ---------------------------------------------------------------
-# disk         7      Bad Block
-# disk         51     Disk I/O Warning
-# disk         153    I/O Retry
+# disk                                  7       Bad Block
+# disk                                  51      Disk I/O Warning
+# disk                                  153     Disk I/O Retry
 #
-# stornvme     11     NVMe Controller Error
-# stornvme     129    NVMe Reset
+# stornvme                              11      NVMe Controller Error
+# stornvme                              129     NVMe Reset / Timeout
+# stornvme                              153     NVMe I/O Retry
 #
-# storahci     129    SATA Reset
+# storahci                              129     SATA Reset / Timeout
 #
-# Ntfs         55     File System Corruption
+# Ntfs                                  55      File System Corruption
 #
 # ===============================================================
+
 
 
 # ===============================================================
 # 設定
 # ===============================================================
-$Days = 30
+
+$Days = 90
 $StartTime = (Get-Date).AddDays(-$Days)
 $Result = @()
+
 
 
 # ===============================================================
@@ -80,7 +91,7 @@ $Result = @()
 function Add-Events {
 
     param(
-        [string]$Name,
+        [string]$Type,
         [string]$Provider,
         [int[]]$Ids
     )
@@ -88,7 +99,7 @@ function Add-Events {
 
     try {
 
-        $events = Get-WinEvent `
+        $Events = Get-WinEvent `
         -FilterHashtable @{
             LogName      = 'System'
             ProviderName = $Provider
@@ -98,23 +109,23 @@ function Add-Events {
         -ErrorAction Stop
 
 
-        foreach ($e in $events) {
+        foreach ($e in $Events) {
 
             $script:Result += [PSCustomObject]@{
 
                 TimeCreated = $e.TimeCreated
-                Type        = $Name
-                ID          = $e.Id
+                Type        = $Type
                 Provider    = $e.ProviderName
+                ID          = $e.Id
+                Level       = $e.LevelDisplayName
                 Message     = $e.Message
 
             }
-
         }
 
     }
     catch {
-        # Provider無し・イベント無しは無視
+        # Providerなし、イベントなしは無視
     }
 
 }
@@ -122,35 +133,30 @@ function Add-Events {
 
 
 # ===============================================================
-# Power / 起動終了
+# Power
 # ===============================================================
 
-Add-Events `
-"Power" `
+Add-Events "Power" `
 "Microsoft-Windows-Kernel-General" `
 @(12,13)
 
 
-Add-Events `
-"Power" `
-"Microsoft-Windows-Kernel-Power" `
-@(41)
-
-
-Add-Events `
-"Power" `
+Add-Events "Power" `
 "EventLog" `
 @(6005,6006,6008,6009)
 
 
-Add-Events `
-"Power" `
+Add-Events "Power" `
 "User32" `
 @(1074)
 
 
-Add-Events `
-"BSOD" `
+Add-Events "Power" `
+"Microsoft-Windows-Kernel-Power" `
+@(41)
+
+
+Add-Events "BSOD" `
 "Microsoft-Windows-WER-SystemErrorReporting" `
 @(1001)
 
@@ -161,8 +167,7 @@ Add-Events `
 # NVIDIA GPU
 # ===============================================================
 
-Add-Events `
-"GPU" `
+Add-Events "GPU" `
 "nvlddmkm" `
 @(13,14,153)
 
@@ -170,11 +175,10 @@ Add-Events `
 
 
 # ===============================================================
-# WHEA Hardware
+# WHEA
 # ===============================================================
 
-Add-Events `
-"WHEA" `
+Add-Events "WHEA" `
 "Microsoft-Windows-WHEA-Logger" `
 @(17,18)
 
@@ -182,40 +186,35 @@ Add-Events `
 
 
 # ===============================================================
-# Storage White List
+# Storage
 # ===============================================================
 
-Add-Events `
-"Storage-disk" `
+Add-Events "Storage" `
 "disk" `
 @(7,51,153)
 
 
-Add-Events `
-"Storage-NVMe" `
+Add-Events "Storage" `
 "stornvme" `
-@(11,129)
+@(11,129,153)
 
 
-Add-Events `
-"Storage-SATA" `
+Add-Events "Storage" `
 "storahci" `
 @(129)
 
 
-Add-Events `
-"Storage-NTFS" `
+Add-Events "Storage" `
 "Ntfs" `
 @(55)
 
 
 
-
 # ===============================================================
-# Export
+# CSV Export
 # ===============================================================
 
-$File = ".\EventLogsV3_{0}.csv" -f `
+$File = ".\EventLogsV2_{0}.csv" -f `
 (Get-Date -Format "yyyyMMdd_HHmmss")
 
 
@@ -230,8 +229,7 @@ $File `
 
 Write-Host ""
 Write-Host "====================================="
-Write-Host " EventLogsV3 Complete"
+Write-Host " EventLogsV2 Complete"
 Write-Host " Output : $File"
 Write-Host " Count  : $($Result.Count)"
 Write-Host "====================================="
-
