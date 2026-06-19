@@ -1,4 +1,4 @@
-# Windows EventLogs
+# Windows EventLogs抽出プログラム
 Windows用のイベント・ログの一次解析用プログラム。<BR>
 イベント・ログから必要なもののみ抽出します。
 
